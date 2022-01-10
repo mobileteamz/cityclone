@@ -18,6 +18,7 @@ clock = pygame.time.Clock()
 player_rect = (0, 0, 100, 100)
 offset_x = 0
 offset_y = 0
+getTicksLastFrame = 0
 
 #################################### LOAD THE LEVEL #######################################
 map = TileMap('level_0.csv')
@@ -26,10 +27,13 @@ app = QApplication(sys.argv)
 toolbar = Window()
 toolbar.show()
 
+#pragma mark ~ Helper function
+
 def convert_position_to_cell(pos):
     cell_x = pos[0] // 30
     cell_y = pos[1] // 30
     return (cell_x, cell_y)
+
 
 ################################# GAME LOOP ##########################
 while running:
@@ -54,7 +58,15 @@ while running:
             elif event.key == pygame.K_DOWN:
                 offset_y += 1
 
+            map = TileMap('level_0.csv', offset_x, offset_y)
+
     ################################# UPDATE/ Animate SPRITE #################################
+    t = pygame.time.get_ticks()
+    # deltaTime in seconds.
+    deltaTime = (t - getTicksLastFrame) / 1000.0
+    getTicksLastFrame = t
+
+    map.update(deltaTime)
 
     ################################# UPDATE WINDOW AND DISPLAY #################################
     map.draw_map(canvas)

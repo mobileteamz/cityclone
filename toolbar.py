@@ -6,23 +6,25 @@ from tiles import *
 class Window(QWidget):
     def __init__(self):
         QWidget.__init__(self)
-        self.setGeometry(20, 20, 150, 800)
+        self.setGeometry(20, 20, 150, 250)
         self.selected_option = None
         layout = QGridLayout()
         self.setLayout(layout)
 
+        # toolBar = QToolBar()
+        # layout.addWidget(toolBar)
+
+
         # Create pyqt toolbar
         for i in range(3):
-            toolBar = QToolBar()
-            layout.addWidget(toolBar)
-
             icon = QIcon("button_road.png")
             button_road = QPushButton()
             button_road.setAutoFillBackground(True)
             button_road.setStyleSheet("background-color: white")
             button_road.setIcon(icon)
             button_road.clicked.connect(self.didPressButtonRoad)
-            toolBar.addWidget(button_road)
+            # toolBar.addWidget(button_road)
+            layout.addWidget(button_road)
 
             icon = QIcon("button_power_plant.png")
             button_power_plant = QPushButton()
@@ -30,15 +32,17 @@ class Window(QWidget):
             button_power_plant.setStyleSheet("background-color: white")
             button_power_plant.setIcon(icon)
             button_power_plant.clicked.connect(self.didPressButtonPowerPlant)
-            toolBar.addWidget(button_power_plant)
+            # toolBar.addWidget(button_power_plant)
+            layout.addWidget(button_power_plant)
 
-            icon = QIcon("police.png")
-            button_power_plant = QPushButton()
-            button_power_plant.setAutoFillBackground(True)
-            button_power_plant.setStyleSheet("background-color: white")
-            button_power_plant.setIcon(icon)
-            button_power_plant.clicked.connect(self.didPressButtonPolice)
-            toolBar.addWidget(button_power_plant)
+            # icon = QIcon("police.png")
+            # button_power_plant = QPushButton()
+            # button_power_plant.setAutoFillBackground(True)
+            # button_power_plant.setStyleSheet("background-color: white")
+            # button_power_plant.setIcon(icon)
+            # button_power_plant.clicked.connect(self.didPressButtonPolice)
+            # # toolBar.addWidget(button_power_plant)
+            # layout.addWidget(button_power_plant)
 
 
     def didPressButtonRoad(self):

@@ -1,26 +1,15 @@
 import pygame, csv, os
+from tile import Tile
 
 CANT_COLS = 100
-
 TILE_EMPTY = 0
 TILE_COMMERCIAL = 1
 TILE_POLICE_DEPARTMENT = 2
+TiLE_HOSPITAL = 3
 TILE_STREET = 4
 TILE_POWER_PLANT = 5
 
 tiles = []
-
-class Tile(pygame.sprite.Sprite):
-    def __init__(self, image, x, y, width, height, type):
-        pygame.sprite.Sprite.__init__(self)
-        self.type = image
-        self.image = pygame.image.load(image)
-        self.rect = self.image.get_rect()
-        self.rect = pygame.Rect((x, y), (width, height))
-
-    def draw(self, surface):
-        surface.blit(self.image, (self.rect.x, self.rect.y))
-
 
 class TileMap():
     def __init__(self, filename, offset_x=0, offset_y=0):
@@ -32,15 +21,21 @@ class TileMap():
         self.map_surface = pygame.Surface((1000, 1000))
         self.load_map()
 
+    def get_type_number_frames(self, type):
+        if type == TILE_POWER_PLANT:
+            return 5
+        else:
+            return 1
+
     def get_associated_png(self, type):
         if type == TILE_STREET:
-            return 'road_straight.png'
+            return 'road_straight'
         elif type == TILE_POLICE_DEPARTMENT:
-            return 'police_department.png'
+            return 'police_department'
         elif type == TILE_COMMERCIAL:
-            return 'commercial.png'
+            return 'commercial'
         elif type == TILE_POWER_PLANT:
-            return 'power_plant.png'
+            return 'power_plant'
         else:
             assert(False, "Invalid file type")
 
@@ -48,10 +43,8 @@ class TileMap():
         x = cell[0]
         y = cell[1]
         pos = x * CANT_COLS + y
-        print("pos: (", x, ",", y , ")")
-        print("pos:", pos)
         self.tiles[pos] = Tile(self.get_associated_png(type), x * self.tile_size, y * self.tile_size, 30, 30,
-                               TILE_STREET)
+                               TILE_STREET, self.get_type_number_frames(type))
 
         if type == TILE_POLICE_DEPARTMENT:
             pos = (x+1) * CANT_COLS + y
@@ -64,6 +57,10 @@ class TileMap():
 
         self.load_map()
 
+    def update(self, delta):
+        for tile in tiles:
+            tile.update(self.map_surface, delta)
+
 
     def draw_map(self, surface):
         surface.blit(self.map_surface, (0, 0))
@@ -71,7 +68,6 @@ class TileMap():
     def load_map(self):
         for tile in self.tiles:
             tile.draw(self.map_surface)
-
 
     def read_csv(selfself, filename):
         map = []
@@ -85,7 +81,7 @@ class TileMap():
 
     def load_tiles(self, filename, offset_x=0, offset_y=0):
         map = self.read_csv(filename)
-        x, y = offset_x, 0
+        x, y = offset_x, offset_y
 
         for row in map:
             x = 0
@@ -93,15 +89,15 @@ class TileMap():
                 if tile == '-1':
                     self.start_x, self.start_y = x * self.tile_size, y * self.tile_size
                 elif int(tile) == TILE_EMPTY:
-                    tiles.append(Tile('empty_tile.png', x * self.tile_size, y * self.tile_size, 30, 30, TILE_EMPTY))
+                    tiles.append(Tile('empty_tile', x * self.tile_size, y * self.tile_size, 30, 30, TILE_EMPTY))
                 elif int(tile) == TILE_COMMERCIAL:
-                    tiles.append(Tile('commercial.png', x * self.tile_size, y * self.tile_size, 60, 60, TILE_COMMERCIAL))
+                    tiles.append(Tile('commercial', x * self.tile_size, y * self.tile_size, 60, 60, TILE_COMMERCIAL))
                 elif int(tile) == TILE_POLICE_DEPARTMENT:
-                    tiles.append(Tile('police_department.png', x * self.tile_size, y * self.tile_size, 60, 60, TILE_POLICE_DEPARTMENT ))
+                    tiles.append(Tile('police_department', x * self.tile_size, y * self.tile_size, 60, 60, TILE_POLICE_DEPARTMENT ))
                 elif int(tile) == TILE_STREET:
-                    tiles.append(Tile('road_straight.png', x * self.tile_size, y * self.tile_size, 30, 30, TILE_STREET))
+                    tiles.append(Tile('road_straight', x * self.tile_size, y * self.tile_size, 30, 30, TILE_STREET))
                 elif int(tile) == TILE_POWER_PLANT:
-                    tiles.append(Tile('power_plant.png', x * self.tile_size, y * self.tile_size, 150, 140, TILE_POWER_PLANT))
+                    tiles.append(Tile('power_plant', x * self.tile_size, y * self.tile_size, 150, 140, TILE_POWER_PLANT,self.get_type_number_frames(TILE_POWER_PLANT)))
                 x += 1
             y += 1
 
